@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TV Launcher</title>
+<style>
+:root{color-scheme:dark;--glass:rgba(255,255,255,.14);--line:rgba(255,255,255,.28);--tx:#fff}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;background:#05070d;color:var(--tx);font-family:-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif}
+.bg{position:fixed;inset:0;filter:blur(70px) saturate(1.6)}
+.bg i{position:absolute;width:55vmax;height:55vmax;border-radius:50%;opacity:.75;animation:fl 18s ease-in-out infinite alternate}
+.bg i:nth-child(1){background:#0a8f5b;left:-10%;top:-20%}
+.bg i:nth-child(2){background:#d9a000;right:-15%;top:10%;animation-delay:-6s}
+.bg i:nth-child(3){background:#0b5ed7;left:20%;bottom:-35%;animation-delay:-3s}
+.bg i:nth-child(4){background:#b3261e;right:25%;bottom:-30%;animation-delay:-9s}
+@keyframes fl{to{transform:translate(12vw,8vh) scale(1.2)}}
+.top{position:fixed;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 18px) 4vw 0;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.chip{padding:8px 16px;border-radius:99px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(24px) saturate(1.8);font-size:clamp(12px,1.4vw,18px)}
+main{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:90px 3vw 90px;z-index:2}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,2.2vw,34px);max-width:1800px;margin:auto;width:100%}
+.app{position:relative;aspect-ratio:16/10;border-radius:clamp(10px,1.6vw,22px);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:clamp(11px,1.8vw,26px);cursor:pointer;outline:none;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.35);transition:transform .35s cubic-bezier(.2,.9,.3,1.2),box-shadow .35s;text-align:center;line-height:1.1}
+.app::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.4),transparent 45%);pointer-events:none}
+a.app{text-decoration:none}
+.app.f{transform:scale(1.14);z-index:3;box-shadow:0 0 0 3px #fff,0 24px 50px rgba(0,0,0,.55)}
+.app small{position:absolute;bottom:-26px;left:0;right:0;font-size:clamp(10px,1.2vw,16px);font-weight:500;opacity:0;transition:.25s}
+.app.f small{opacity:1;bottom:6px;text-shadow:0 1px 4px #000}
+.glass{background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(26px) saturate(1.8)}
+.row1{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,1fr);gap:inherit;padding:clamp(8px,1.4vw,20px);border-radius:28px;margin-bottom:6px}
+.foot{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 34px);width:100%;text-align:center;font-size:13px;opacity:.75;z-index:5}
+#welcome{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,7,13,.55);backdrop-filter:blur(30px);transition:opacity 1s,visibility 1s}
+#welcome h1{font-size:clamp(34px,7vw,90px);font-weight:700;letter-spacing:-1px;animation:up 1.4s both}
+#welcome p{opacity:.75;margin-top:10px;animation:up 1.4s .4s both}
+@keyframes up{from{opacity:0;transform:translateY(24px) scale(.96);filter:blur(10px)}}
+#welcome.h{opacity:0;visibility:hidden}
+#set{position:fixed;inset:0;z-index:15;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);backdrop-filter:blur(12px)}
+#set.o{display:flex}
+.panel{width:min(620px,90vw);padding:28px;border-radius:30px}
+.panel h2{margin-bottom:16px}
+.r{display:flex;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--line);font-size:clamp(15px,2vw,22px)}
+.bar{height:10px;border-radius:9px;background:rgba(255,255,255,.2);margin-top:14px;overflow:hidden}.bar b{display:block;height:100%;width:38%;background:#fff;border-radius:9px}
+.hint{margin-top:16px;font-size:13px;opacity:.7}
+#toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:99px;z-index:30;opacity:0;transition:.3s}
+#toast.s{opacity:1}
+.tl{display:flex;flex-direction:column;padding:10px 22px;border-radius:24px;line-height:1.15}
+#clk{font-size:clamp(22px,3.2vw,44px);font-weight:700;letter-spacing:-1px}
+#dt{font-size:clamp(11px,1.3vw,17px);opacity:.85}
+.tr{display:flex;gap:12px;align-items:center}
+#mic{width:clamp(42px,4.2vw,58px);height:clamp(42px,4.2vw,58px);border-radius:50%;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(24px) saturate(1.8);display:grid;place-items:center;color:#fff;cursor:pointer;transition:.3s}
+#mic svg{width:50%;height:50%}
+#mic:hover{transform:scale(1.1)}
+#mic.on{background:#ff3b30;animation:pl 1s infinite}
+@keyframes pl{50%{box-shadow:0 0 0 14px rgba(255,59,48,.25)}}
+#hb{position:fixed;left:0;right:0;bottom:0;height:60px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:16;touch-action:none;cursor:pointer}
+#hb i{width:min(180px,32vw);height:6px;border-radius:9px;background:rgba(255,255,255,.88);box-shadow:0 0 14px rgba(255,255,255,.55);transition:transform .3s cubic-bezier(.2,.9,.3,1.2)}
+#hb.b i{transform:translateY(-16px) scaleX(1.25)}
+#ap{position:fixed;inset:0;z-index:14;display:none;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 14px) 3vw 70px;background:rgba(5,7,13,.55);backdrop-filter:blur(30px)}
+#ap.o{display:flex;animation:up .5s both}
+.ah{display:flex;gap:10px;align-items:center;padding:10px 16px;border-radius:22px;margin-bottom:12px}
+.ah b{font-size:clamp(14px,1.8vw,22px)}
+.ah input{flex:1;min-width:0;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.12);color:#fff;outline:none;display:none}
+#ay{flex:1;display:none;gap:8px}
+.ah button,.ah a{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--glass);color:#fff;cursor:pointer;text-decoration:none;font-size:14px;white-space:nowrap}
+#af{flex:1;width:100%;border:0;border-radius:22px;background:#000}
+.ah{flex-wrap:wrap}.ah b{flex:1}
+@media(max-width:700px){#ay{flex:1 1 100%;order:5}.ah b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+#welcome.h{pointer-events:none}
+</style></head><body>
+<div class="bg"><i></i><i></i><i></i><i></i></div>
+<div class="top"><div class="chip glass tl"><span id="clk"></span><span id="dt"></span></div><div class="tr"><span class="chip glass" id="stor">Storage…</span><button id="mic" aria-label="Mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button></div></div>
+<main><div class="grid" id="grid"></div></main>
+<div class="foot">Created by Mr Alon</div>
+<div id="ap"><div class="ah glass"><b id="at"></b><a id="ao" target="_blank" rel="noopener">Tab me kholein</a><button id="ax">✕</button></div><iframe id="af" allow="autoplay; fullscreen; encrypted-media; microphone" allowfullscreen></iframe></div>
+<div id="hb"><i></i></div>
+<div id="set"><div class="panel glass"><h2>Settings</h2>
+<div class="r"><span>Storage</span><span id="s1">—</span></div>
+<div class="r"><span>RAM</span><span id="s2">—</span></div>
+<div class="r"><span>Launcher</span><span>Created by Mr Alon</span></div>
+<div class="bar"><b></b></div><p class="hint">Back / Esc to close</p></div></div>
+<div id="welcome"><h1>Welcome Apple TV</h1><p>Created by Mr Alon</p></div>
+<div id="toast" class="chip glass"></div>
+<script>
+const A=[
+["YouTube","#fff","#e00","https://www.youtube-nocookie.com/embed/live_stream?channel=UCBR8-60-IB28hpQRCODM3CA&autoplay=1"],["Chrome","#fff","#1a73e8","https://www.google.com/chrome"],["Google","#4285f4","#fff","https://www.google.com"],["Play Store","#fff","linear-gradient(135deg,#00c853,#2979ff)","https://play.google.com"],["Settings","#fff","linear-gradient(#9a9aa0,#58585e)","set"],["Netflix","#e50914","#fff","https://www.netflix.com"],
+["Spotify","#1ed760","#111","https://open.spotify.com"],["Music","#fff","linear-gradient(#ff5f6d,#e5233d)","https://music.apple.com"],["Photos","#fff","linear-gradient(135deg,#f9a825,#e91e63,#3f51b5)","https://photos.google.com"],["TV","#fff","#000","https://tv.apple.com"],["Zoom","#fff","#0b5cff","https://zoom.us/join"],["Prime Video","#fff","#1799ff","https://www.primevideo.com"],
+["Podcasts","#fff","linear-gradient(#b25cff,#7a2fe0)","https://podcasts.apple.com"],["Search","#fff","linear-gradient(#aaa,#777)","https://www.google.com/search?q="],["AccuWeather","#fff","#f26b21","https://www.accuweather.com"],["F1","#fff","#e10600","https://www.formula1.com"],["Files","#fff","#f5a623","https://drive.google.com"],["Apps","#fff","linear-gradient(#2fa0ff,#0a4de0)","https://play.google.com/store/apps"]];
+const g=document.getElementById('grid');let cur=0,els=[];
+function build(){A.forEach((a,i)=>{const d=document.createElement('div');d.className='app';d.tabIndex=0;d.style.color=a[1];d.style.background=a[2];d.textContent=a[0];
+d.onclick=()=>{cur=i;focus();open_(a)};d.onmouseenter=()=>{cur=i;focus()};g.appendChild(d);els.push(d)});focus()}
+function focus(){els.forEach((e,i)=>e.classList.toggle('f',i==cur));els[cur].scrollIntoView({block:'nearest'})}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('s');setTimeout(()=>e.classList.remove('s'),2200)}
+function open_(a){if(a[3]=='set'){document.getElementById('set').classList.add('o')}else if(a[3]){showApp(a)}else toast(a[0]+' installed app launch hoga (Android intent)')}
+document.addEventListener('keydown',e=>{const k=e.key,s=document.getElementById('set');const apx=document.getElementById('ap');if(apx.classList.contains('o')){if(k=='Escape'||(k=='Backspace'&&e.target.tagName!='INPUT'))closeApp();return}
+if(s.classList.contains('o')){if(k=='Escape'||k=='Backspace'||k=='Enter')s.classList.remove('o');return}
+const n=A.length,c=6;if(k=='ArrowRight')cur=Math.min(n-1,cur+1);else if(k=='ArrowLeft')cur=Math.max(0,cur-1);else if(k=='ArrowDown')cur=Math.min(n-1,cur+c);else if(k=='ArrowUp')cur=Math.max(0,cur-c);else if(k=='Enter'){open_(A[cur]);return}else return;e.preventDefault();focus()});
+function clk(){const d=new Date();document.getElementById('clk').textContent=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});document.getElementById('dt').textContent=d.toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'})}clk();setInterval(clk,15000);
+async function dev(){let st='128 GB',ram='—';try{const m=navigator.deviceMemory;if(m)ram=(m>=8?'8+':m)+' GB';
+if(navigator.storage&&navigator.storage.estimate){const q=(await navigator.storage.estimate()).quota/1e9/0.6;st=[64,128,256,512,1024].find(t=>q<=t*0.95)||512;st=st+' GB'}}catch(e){}
+document.getElementById('stor').textContent='Storage '+st;document.getElementById('s1').textContent=st;document.getElementById('s2').textContent=ram}
+function back(){const s=document.getElementById('set');if(document.getElementById('ap').classList.contains('o')){closeApp();return}if(s.classList.contains('o')){s.classList.remove('o');return}cur=0;focus();toast('Home')}
+const hb=document.getElementById('hb');let y0=null;
+hb.addEventListener('pointerdown',e=>{y0=e.clientY;hb.setPointerCapture(e.pointerId)});
+hb.addEventListener('pointerup',e=>{if(y0!==null&&(y0-e.clientY>25||Math.abs(y0-e.clientY)<6)){hb.classList.add('b');setTimeout(()=>hb.classList.remove('b'),350);back()}y0=null});
+const mic=document.getElementById('mic');
+mic.onclick=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){toast('Mic is browser me supported nahi (Android me SpeechRecognizer chalega)');return}const r=new R();mic.classList.add('on');r.onresult=ev=>{const t=ev.results[0][0].transcript;toast('“'+t+'”');const i=A.findIndex(a=>t.toLowerCase().includes(a[0].toLowerCase()));if(i>=0){cur=i;focus();open_(A[i])}};r.onend=()=>mic.classList.remove('on');r.onerror=()=>{mic.classList.remove('on');toast('Mic permission allow karein')};r.start()};
+const ap=document.getElementById('ap'),af=document.getElementById('af');
+function closeApp(){ap.classList.remove('o');af.removeAttribute('srcdoc');af.src='about:blank'}
+function showApp(a){document.getElementById('at').textContent=a[0];document.getElementById('ao').href=a[3];af.removeAttribute('srcdoc');af.src=a[0]=='Google'?'https://www.google.com/webhp?igu=1':a[3];ap.classList.add('o')}
+document.getElementById('ax').onclick=closeApp;
+build();dev();setTimeout(()=>document.getElementById('welcome').classList.add('h'),3200);
+</script></body></html>
